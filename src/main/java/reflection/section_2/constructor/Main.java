@@ -1,4 +1,4 @@
-package reflection.section_2;
+package reflection.section_2.constructor;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
