@@ -1,10 +1,12 @@
 package reflection.section_4.setting_field_value.data;
 
+import java.util.Arrays;
+
 public class UserInterface {
     private String titleColor;
     private String titleText;
-    private short titleFontSize;
-    private short footerFontSize;
+    private short[] titleTextSizes;
+    private String[] titleFonts;
 
     public String getTitleColor() {
         return titleColor;
@@ -14,12 +16,12 @@ public class UserInterface {
         return titleText;
     }
 
-    public short getTitleFontSize() {
-        return titleFontSize;
+    public short[] getTitleTextSizes() {
+        return titleTextSizes;
     }
 
-    public short getFooterFontSize() {
-        return footerFontSize;
+    public String[] gettitleFonts() {
+        return titleFonts;
     }
 
     @Override
@@ -27,8 +29,8 @@ public class UserInterface {
         return "UserInterface{" +
                 "titleColor='" + titleColor + '\'' +
                 ", titleText='" + titleText + '\'' +
-                ", titleFontSize=" + titleFontSize +
-                ", footerFontSize=" + footerFontSize +
+                ", titleTextSizes=" + Arrays.toString(titleTextSizes) +
+                ", footerFontitleFonts=" + Arrays.toString(titleFonts) +
                 '}';
     }
 }
