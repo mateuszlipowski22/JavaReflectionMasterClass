@@ -1,4 +1,4 @@
-package reflection.section_5.methods.api;
+package reflection.section_5.methods.setterGetterTester.api;
 
 public class ClothingProduct extends Product{
     private Size size;

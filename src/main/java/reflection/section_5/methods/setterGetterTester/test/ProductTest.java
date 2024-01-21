@@ -1,7 +1,6 @@
-package reflection.section_5.methods.test;
+package reflection.section_5.methods.setterGetterTester.test;
 
-import reflection.section_5.methods.api.ClothingProduct;
-import reflection.section_5.methods.api.Product;
+import reflection.section_5.methods.setterGetterTester.api.ClothingProduct;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
