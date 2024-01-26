@@ -2,6 +2,7 @@ package reflection.section_7.annotations.automatic_class_loading;
 
 import reflection.section_7.annotations.automatic_class_loading.annotations.InitializerClass;
 import reflection.section_7.annotations.automatic_class_loading.annotations.InitializerMethod;
+import reflection.section_7.annotations.automatic_class_loading.annotations.ScanPackages;
 import reflection.section_7.annotations.automatic_class_loading.app.AutoSaver;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 public class Main {
     public static void main(String[] args) throws URISyntaxException, IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {

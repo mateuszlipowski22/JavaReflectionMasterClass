@@ -1,5 +1,7 @@
 import reflection.section_7.annotations.automatic_class_loading.annotations.InitializerClass;
 import reflection.section_7.annotations.automatic_class_loading.annotations.InitializerMethod;
+import reflection.section_7.annotations.automatic_class_loading.annotations.RetryOperation;
+import reflection.section_7.annotations.automatic_class_loading.annotations.ScanPackages;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -10,14 +12,18 @@ import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+@ScanPackages({
+        "reflection.section_7.annotations.automatic_class_loading.app",
+        "reflection.section_7.annotations.automatic_class_loading.app.configs",
+        "reflection.section_7.annotations.automatic_class_loading.app.http",
+        "reflection.section_7.annotations.automatic_class_loading.app.database"
+})
 public class Main {
-    public static void main(String[] args) throws URISyntaxException, IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        initialize("reflection.section_7.annotations.automatic_class_loading.app",
-                "reflection.section_7.annotations.automatic_class_loading.app.configs",
-                "reflection.section_7.annotations.automatic_class_loading.app.http",
-                "reflection.section_7.annotations.automatic_class_loading.app.database");
+    public static void main(String[] args) throws Throwable {
+        initialize();
     }
 
     private static List<Method> getAllInitializationMethods(Class<?> clazz){
@@ -30,8 +36,15 @@ public class Main {
         return initializingMethods;
     }
 
-    public static void initialize(String ... packageName) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, URISyntaxException, IOException, ClassNotFoundException {
-        List<Class<?>> classes = getAllClasses(packageName);
+    public static void initialize() throws Throwable {
+
+        ScanPackages scanPackages = Main.class.getAnnotation(ScanPackages.class);
+
+        if(scanPackages==null || scanPackages.value().length==0){
+            return;
+        }
+
+        List<Class<?>> classes = getAllClasses(scanPackages.value());
         for(Class<?> clazz : classes){
             if(!clazz.isAnnotationPresent(InitializerClass.class)){
                 continue;
@@ -42,7 +55,31 @@ public class Main {
             Object instance = clazz.getDeclaredConstructor().newInstance();
 
             for(Method method : methods){
+                callInitializingMethod(instance,method);
+            }
+        }
+    }
+
+    private static void callInitializingMethod(Object instance, Method method) throws Throwable {
+        RetryOperation retryOperation = method.getAnnotation(RetryOperation.class);
+
+        int numberOfRetries = retryOperation == null ? 0 : retryOperation.numberOfRetries();
+
+        while(true){
+            try{
                 method.invoke(instance);
+                break;
+            }catch (InvocationTargetException e){
+                Throwable targetException = e.getTargetException();
+                if(numberOfRetries > 0 && Set.of(retryOperation.retryExceptions()).contains(targetException.getClass())){
+                    numberOfRetries--;
+                    System.out.println("Retrying");
+                    Thread.sleep((retryOperation.durationBetweenRetriesMs()));
+                }else if(retryOperation!=null){
+                    throw new Exception(retryOperation.failureMessage());
+                }else {
+                    throw targetException;
+                }
             }
         }
     }
